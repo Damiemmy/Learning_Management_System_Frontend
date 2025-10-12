@@ -1,4 +1,4 @@
-import {create} from zustand
+import {create} from 'zustand'
 import {mountStoreDevtool} from 'simple-zustand-devtools'
 
 const useAuthStore=create((set,get)=>({
@@ -22,3 +22,5 @@ if (import.meta.env.DEV){
     mountStoreDevtool("Store",useAuthStore);
 
 }
+
+export{useAuthStore};
