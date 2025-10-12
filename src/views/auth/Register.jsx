@@ -110,9 +110,11 @@ const handleSubmit=async(e)=>{
                   </div>
                   <div>
                     <div className="d-grid">
-                      <button type="submit" className="btn btn-primary">
+                      {isLoading?<button type="submit" disabled className="btn btn-primary">
+                        Processing<i className='fas fa-spinner fa-spin'></i>
+                      </button>:<button type="submit" className="btn btn-primary">
                         Sign Up <i className='fas fa-user-plus'></i>
-                      </button>
+                      </button>}
                     </div>
                   </div>
                 </form>

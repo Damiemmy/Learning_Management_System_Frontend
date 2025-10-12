@@ -42,7 +42,6 @@ export const logout=()=>{
     Cookie.remove("refresh_token");
     useAuthStore.getState().setUser(null)
 
-    alert('you have been logged out');
 };
 
 export const setUser=async()=>{
