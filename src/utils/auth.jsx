@@ -3,6 +3,7 @@ import apiInstance from "./axios"
 import jwt_decode from "jwt-decode"
 import Cookie from "js-cookie"
 import Swal from "sweetalert2"
+import axios from "axios"
 
 export const login = async(email,password) => {
     try{
@@ -80,7 +81,7 @@ export const setAuthUser=(access_token,refresh_token)=>{
 };
 
 export const getRefreshToken=async()=>{
-    const refresh_token=Cookie.get("refresh_token",refresh_token);
+    const refresh_token=Cookie.get("refresh_token");
     const response=await axios.post("user/token/refresh/",{refresh:refresh_token});
     return response.data;
 }
