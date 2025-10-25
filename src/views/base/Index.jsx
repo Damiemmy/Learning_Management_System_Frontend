@@ -192,7 +192,7 @@ function Index() {
                                                 </a>
                                             </div>
                                             <h4 className="mb-2 text-truncate-line-2 ">
-                                                <Link to={`/course-detail/slug/`} className="text-inherit text-decoration-none text-dark fs-5">
+                                                <Link to={`/course/course-detail/${c.slug}`} className="text-inherit text-decoration-none text-dark fs-5">
                                                     {c.description}
                                                 </Link>
                                             </h4>
@@ -212,13 +212,13 @@ function Index() {
                                         <div className="card-footer">
                                             <div className="row align-items-center g-0">
                                                 <div className="col">
-                                                    <h5 className="mb-0">{c.price}</h5>
+                                                    <h5 className="mb-0">${c.price}</h5>
                                                 </div>
                                                 <div className="col-auto">
                                                     <button type='button' className="text-inherit text-decoration-none btn btn-primary me-2">
                                                         <i className="fas fa-shopping-cart text-primary text-white" />
                                                     </button>
-                                                    <Link to={""} className="text-inherit text-decoration-none btn btn-primary">
+                                                    <Link to={`/course/course-details/${c.slug}`} className="text-inherit text-decoration-none btn btn-primary">
                                                         Enroll Now <i className="fas fa-arrow-right text-primary align-middle me-2 text-white" />
                                                     </Link>
                                                 </div>
