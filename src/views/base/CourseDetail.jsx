@@ -8,6 +8,7 @@ import BaseFooter from '../partials/BaseFooter'
 import apiInstance from '../../utils/axios'
 import useAxios from '../../utils/useAxios'
 import { useParams } from 'react-router-dom'
+import GetCurrentAddress from '../plugin/UserCountry'
 
 function CourseDetail() {
     const[course,setCourse]=useState([])
@@ -15,9 +16,11 @@ function CourseDetail() {
     const{slug}=useParams()
     const[addToCartBtn,setAddToCartBtn]=useState('Add To Cart')
     console.log(CartId())
-    
+    const country= (GetCurrentAddress().country);
+
     const getCourseDetails=async()=>{
         setIsLoading(true)
+        
        
         try{
             await useAxios()
@@ -988,7 +991,7 @@ function CourseDetail() {
                                                    {addToCartBtn==="Added To Cart" &&
                                                     <button 
                                                     type="button"
-                                                    onClick={()=>addToCart(1,1,course.price,"Nigeria",CartId())} 
+                                                    onClick={()=>addToCart(1,1,course.price,country,CartId())} 
                                                     className="btn btn-primary mb-0 w-100 me-2">
 
                                                         <i className='fas fa-check-circle'></i> Added To Cart
