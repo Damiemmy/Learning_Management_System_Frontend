@@ -9,6 +9,7 @@ import apiInstance from '../../utils/axios'
 import useAxios from '../../utils/useAxios'
 import { useParams } from 'react-router-dom'
 import GetCurrentAddress from '../plugin/UserCountry'
+import UserData from '../plugin/UserData'
 
 function CourseDetail() {
     const[course,setCourse]=useState([])
@@ -17,6 +18,9 @@ function CourseDetail() {
     const[addToCartBtn,setAddToCartBtn]=useState('Add To Cart')
     console.log(CartId())
     const country= (GetCurrentAddress().country);
+    const userId= UserData().user_id
+    console.log(userId)
+    console.log(country)
 
     const getCourseDetails=async()=>{
         setIsLoading(true)
@@ -981,7 +985,7 @@ function CourseDetail() {
                                                    {addToCartBtn==="Add To Cart" &&
                                                     <button 
                                                     type="button"
-                                                    onClick={()=>addToCart(course.id,1,course.price,"Nigeria","2553636367")} 
+                                                    onClick={()=>addToCart(course.id,userId,course.price,country,CartId)} 
                                                     className="btn btn-primary mb-0 w-100 me-2">
 
                                                         <i className='fas fa-shopping-cart'></i> Add To Cart
