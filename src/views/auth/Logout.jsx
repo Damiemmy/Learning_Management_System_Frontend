@@ -3,12 +3,16 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { logout } from "../../utils/auth";
 import { Link } from "react-router-dom";
+import Toast from "../plugin/Toast";
 
 
 function Logout() {
   useEffect(() => {
     logout();
-    alert("you have been logged out")
+    Toast().fire({
+      icon:"warning",
+      title:"you have been logged out"
+    })
   }, []);
 
   return (

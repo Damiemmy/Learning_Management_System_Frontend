@@ -6,6 +6,7 @@ import apiInstance from '../../utils/axios'
 import { register } from '../../utils/auth'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
+import Toast from '../plugin/Toast'
 
 
 function Register() {
@@ -31,7 +32,10 @@ const handleSubmit=async(e)=>{
     alert(error)
   }else{
     Navigate('/')
-    alert('registration Successful, you have now been logged in')
+    Toast().fire({
+      icon:"success",
+      title:'registration Successful, you have now been logged in'
+    })
   }
 
   }

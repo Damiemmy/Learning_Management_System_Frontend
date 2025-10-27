@@ -4,6 +4,7 @@ import BaseFooter from '../partials/BaseFooter'
 import apiInstance from '../../utils/axios'
 import { useNavigate } from 'react-router-dom'
 import { useSearchParams } from 'react-router-dom'
+import Toast from '../plugin/Toast'
 
 
 function CreateNewPassword() {
@@ -22,7 +23,10 @@ function CreateNewPassword() {
     e.preventDefault()
     setIsLoading(true)
     if(confirmPassword !== password){
-      alert("password does not Match")
+      Toast().fire({
+        icon:"warning",
+        title:"Password Does Not Match"
+      })
       return 
     }else{
       const formdata= new FormData()
@@ -36,7 +40,10 @@ function CreateNewPassword() {
         .post('user/password-change/',formdata)
         .then((res)=>{
           console.log(res.data)
-          alert(res.data.message)
+          Toast().fire({
+            icon:"success",
+            title:(res.data.message)
+          })
           setIsLoading(false)
           navigate('/login')
       })

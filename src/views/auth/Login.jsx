@@ -6,6 +6,7 @@ import BaseFooter from '../partials/BaseFooter'
 import { Link } from 'react-router-dom'
 import { login } from '../../utils/auth'
 import { useNavigate } from 'react-router-dom'
+import Toast from '../plugin/Toast'
 
 
 function Login() {
@@ -22,7 +23,10 @@ const HandleLogin=async(e)=>{
     alert(error)
     setLoading(false)
   }else{
-    alert('login successful')
+    Toast().fire({
+      icon:"success",
+      title:'login successful'
+    })
     Navigate('/')
     setLoading(false)
   }

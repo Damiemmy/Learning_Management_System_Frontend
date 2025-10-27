@@ -4,6 +4,8 @@ import moment from "moment"
 import CartId from '../plugin/CartId'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
+import Swal from 'sweetalert2'
+import Toast from '../plugin/Toast'
 
 import apiInstance from '../../utils/axios'
 import useAxios from '../../utils/useAxios'
@@ -61,7 +63,10 @@ function CourseDetail() {
             await useAxios().post("/course/cart/",formData).then((res)=>{
             console.log(res.data)
             setAddToCartBtn("Added To Cart")
-
+            Toast().fire({
+                icon:"success",
+                title:"Added To Cart",
+            })
             })     
         }catch(err){
             console.log(err.message)
