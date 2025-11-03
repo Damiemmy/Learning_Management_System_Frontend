@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { CartContext } from "../plugin/context";
 
 function BaseHeader() {
+  const { cartCount } = useContext(CartContext);
+
   return (
-    <nav
-      className="navbar navbar-expand-lg bg-body-tertiary navbar-dark"
-      data-bs-theme="dark"
-    >
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container-fluid">
-        <Link className="navbar-brand fw-bold" to="/">
+        {/* Brand */}
+        <Link className="navbar-brand fw-bold text-uppercase" to="/">
           CODEMANT
         </Link>
 
@@ -31,12 +32,12 @@ function BaseHeader() {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <Link className="nav-link" to="/pages/contact-us/">
-                <i className="fas fa-phone"></i> Contact Us
+                <i className="fas fa-phone me-1"></i> Contact Us
               </Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/pages/about-us/">
-                <i className="fas fa-address-card"></i> About Us
+                <i className="fas fa-address-card me-1"></i> About Us
               </Link>
             </li>
 
@@ -49,50 +50,27 @@ function BaseHeader() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i className="fas fa-chalkboard-user"></i> Instructor
+                <i className="fas fa-chalkboard-user me-1"></i> Instructor
               </a>
-              <ul className="dropdown-menu">
+              <ul className="dropdown-menu dropdown-menu-dark">
                 <li>
                   <Link className="dropdown-item" to="/instructor/dashboard/">
-                    <i className="bi bi-grid-fill"></i> Dashboard
+                    <i className="bi bi-grid-fill me-2"></i> Dashboard
                   </Link>
                 </li>
                 <li>
                   <Link className="dropdown-item" to="/instructor/courses/">
-                    <i className="fas fa-shopping-cart"></i> My Courses
+                    <i className="fas fa-book me-2"></i> My Courses
                   </Link>
                 </li>
                 <li>
                   <Link className="dropdown-item" to="/instructor/create-course/">
-                    <i className="fas fa-plus"></i> Create Course
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/instructor/reviews/">
-                    <i className="fas fa-star"></i> Reviews
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="dropdown-item"
-                    to="/instructor/question-answer/"
-                  >
-                    <i className="fas fa-envelope"></i> Q/A
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/instructor/students/">
-                    <i className="fas fa-users"></i> Students
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/instructor/earning/">
-                    <i className="fas fa-dollar-sign"></i> Earning
+                    <i className="fas fa-plus me-2"></i> Create Course
                   </Link>
                 </li>
                 <li>
                   <Link className="dropdown-item" to="/instructor/profile/">
-                    <i className="fas fa-gear"></i> Settings & Profile
+                    <i className="fas fa-gear me-2"></i> Settings & Profile
                   </Link>
                 </li>
               </ul>
@@ -107,45 +85,35 @@ function BaseHeader() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i className="fas fa-graduation-cap"></i> Student
+                <i className="fas fa-graduation-cap me-1"></i> Student
               </a>
-              <ul className="dropdown-menu">
+              <ul className="dropdown-menu dropdown-menu-dark">
                 <li>
                   <Link className="dropdown-item" to="/student/dashboard/">
-                    <i className="bi bi-grid-fill"></i> Dashboard
+                    <i className="bi bi-grid-fill me-2"></i> Dashboard
                   </Link>
                 </li>
                 <li>
                   <Link className="dropdown-item" to="/student/courses/">
-                    <i className="fas fa-shopping-cart"></i> My Courses
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/student/wishlist/">
-                    <i className="fas fa-heart"></i> Wishlist
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="dropdown-item"
-                    to="/student/question-answer/"
-                  >
-                    <i className="fas fa-envelope"></i> Q/A
+                    <i className="fas fa-book-open me-2"></i> My Courses
                   </Link>
                 </li>
                 <li>
                   <Link className="dropdown-item" to="/student/profile/">
-                    <i className="fas fa-gear"></i> Profile & Settings
+                    <i className="fas fa-gear me-2"></i> Profile & Settings
                   </Link>
                 </li>
               </ul>
             </li>
           </ul>
 
-          {/* Search Bar + Buttons */}
-          <form className="d-flex flex-wrap my-2 my-lg-0" role="search">
+          {/* Search Bar */}
+          <form
+            className="d-flex align-items-center my-2 my-lg-0 mx-lg-3"
+            role="search"
+          >
             <input
-              className="form-control"
+              className="form-control me-2"
               type="search"
               placeholder="Search Courses"
               aria-label="Search Courses"
@@ -158,13 +126,13 @@ function BaseHeader() {
           {/* Auth + Cart Buttons */}
           <div className="d-flex flex-wrap mt-2 mt-lg-0 gap-2">
             <Link to="/login/" className="btn btn-primary">
-              Login <i className="fas fa-sign-in-alt"></i>
+              <i className="fas fa-sign-in-alt me-1"></i> Login
             </Link>
-            <Link to="/register/" className="btn btn-primary">
-              Register <i className="fas fa-user-plus"></i>
+            <Link to="/register/" className="btn btn-outline-light">
+              <i className="fas fa-user-plus me-1"></i> Register
             </Link>
             <Link className="btn btn-success" to="/cart/">
-              Cart (3) <i className="fas fa-shopping-cart"></i>
+              <i className="fas fa-shopping-cart me-1"></i> Cart ({cartCount || 0})
             </Link>
           </div>
         </div>

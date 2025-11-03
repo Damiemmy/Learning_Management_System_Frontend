@@ -1,9 +1,96 @@
-import React from "react";
-import BaseHeader from "../partials/BaseHeader";
-import BaseFooter from "../partials/BaseFooter";
-import { Link } from "react-router-dom";
-
+import {useEffect,useState} from 'react'
+import BaseHeader from '../partials/BaseHeader'
+import BaseFooter from '../partials/BaseFooter'
+import { Link } from 'react-router-dom'
+import Rater from 'react-rater'
+import "react-rater/lib/react-rater.css"
+import useAxios from '../../utils/useAxios'
+import apiInstance from '../../utils/axios'
+import { useContext } from 'react'
+import CartId from '../plugin/CartId'
+import { CartContext } from '../plugin/context'
+import GetCurrentAddress from '../plugin/UserCountry'
+import Toast from '../plugin/Toast'
+import UserData from '../plugin/UserData'
 function Search() {
+    const[course,setCourse]=useState([])
+    const[isLoading,setIsLoading]=useState(true)
+    const{cartCount,setCartCount}=useContext(CartContext)
+    const[addToCartBtn,setAddToCartBtn]=useState("Add To Cart")
+    const country=GetCurrentAddress().country
+    const cartId=CartId()
+    const userId=UserData()?.user_id
+    const [searchQuery,setSearchQuery]=useState("");
+
+
+    const fetchCourse=async()=>{
+        setIsLoading(true)
+        try{
+            await apiInstance
+            .get('/course/course-list/')
+            .then((res)=>{
+            setCourse(res.data)})
+            setIsLoading(false)
+        }catch(error){
+            console.log(error);
+            setIsLoading
+        }
+        
+        }
+
+
+    useEffect(()=>{
+        fetchCourse();
+    },[])
+    console.log(course)
+
+        const addToCart=async(courseId,userId,price,country,cartid)=>{
+        setAddToCartBtn("Adding To Cart")
+        const formData=new FormData()
+        formData.append("course_id",courseId)
+        formData.append("user_id",userId)
+        formData.append("price",price)
+        formData.append("country_name",country)
+        formData.append("cart_id",cartid)
+
+        try{
+            await useAxios()
+                .post("/course/cart/",formData).then((res)=>{
+                console.log(res.data)
+                setAddToCartBtn("Added To Cart")
+            
+                apiInstance.get(`course/cart-list/${CartId()}`)
+                .then((res)=>{
+                setCartCount(res.data?.length);
+                })
+            Toast().fire({
+                icon:"success",
+                title:"Added To Cart",
+            })
+            
+            })     
+        }catch(err){
+            console.log(err.message)
+        }
+        
+    }
+
+    const handleSearch=(e)=>{
+      const query=e.target.value.toLowerCase();
+      setSearchQuery(query)
+      console.log(query);
+
+      if (query===""){
+        fetchCourse()
+      }else{
+        const courses=course.filter((course)=>{
+          return course.title.toLowerCase().includes(query)
+
+        })
+        setCourse(courses)
+      }
+    }
+
   return (
     <>
       <BaseHeader />
@@ -27,6 +114,7 @@ function Search() {
                   placeholder="Search Courses..."
                   name=""
                   id=""
+                  onChange={handleSearch}
                 />
               </div>
             </div>
@@ -34,78 +122,68 @@ function Search() {
           <div className="row">
             <div className="col-md-12">
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                <div className="col">
-                  {/* Card */}
-                  <div className="card card-hover">
-                    <Link to={`/course-detail/slug/`}>
-                      <img
-                        src="https://geeksui.codescandy.com/geeks/assets/images/course/course-css.jpg"
-                        alt="course"
-                        className="card-img-top"
-                        style={{
-                          width: "100%",
-                          height: "200px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Link>
-                    {/* Card Body */}
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between align-items-center mb-3">
-                        <span className="badge bg-info">Intermediate</span>
-                        <a href="#" className="fs-5">
-                          <i className="fas fa-heart text-danger align-middle" />
-                        </a>
-                      </div>
-                      <h4 className="mb-2 text-truncate-line-2 ">
-                        <Link
-                          to={`/course-detail/slug/`}
-                          className="text-inherit text-decoration-none text-dark fs-5"
-                        >
-                          How to easily create a website with JavaScript
-                        </Link>
-                      </h4>
-                      <small>By: Claire Evans</small> <br />
-                      <small>16k Students</small> <br />
-                      <div className="lh-1 mt-3 d-flex">
-                        <span className="align-text-top">
-                          <span className="fs-6">
-                            <i className="fas fa-star text-warning"></i>
-                            <i className="fas fa-star text-warning"></i>
-                            <i className="fas fa-star text-warning"></i>
-                            <i className="fas fa-star text-warning"></i>
-                            <i className="fas fa-star-half text-warning"></i>
-                          </span>
-                        </span>
-                        <span className="text-warning">4.5</span>
-                        <span className="fs-6 ms-2">(9,300)</span>
-                      </div>
-                    </div>
-                    {/* Card Footer */}
-                    <div className="card-footer">
-                      <div className="row align-items-center g-0">
-                        <div className="col">
-                          <h5 className="mb-0">$39.00</h5>
-                        </div>
-                        <div className="col-auto">
-                          <button
-                            type="button"
-                            className="text-inherit text-decoration-none btn btn-primary me-2"
-                          >
-                            <i className="fas fa-shopping-cart text-primary text-white" />
-                          </button>
-                          <Link
-                            to={""}
-                            className="text-inherit text-decoration-none btn btn-primary"
-                          >
-                            Enroll Now{" "}
-                            <i className="fas fa-arrow-right text-primary align-middle me-2 text-white" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {course?.map((c,index)=>(
+                                
+                               <div className="col">
+                                    {/* Card */}
+                                    <div className="card card-hover">
+                                        <Link to={`/course/course-detail/${c.slug}/`}>
+                                            <img
+                                                src={c.image}
+                                                alt="course"
+                                                className="card-img-top"
+                                                style={{ width: "100%", height: "200px", objectFit: "cover" }}
+
+                                            />
+                                        </Link>
+                                        {/* Card Body */}
+                                        <div className="card-body">
+                                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                               <div>
+                                                 <span className="badge bg-info">{c.level}</span> 
+                                                 <span className="badge bg-success ms-2">{c.language}</span>
+                                               </div>
+                                                <a href="#" className="fs-5">
+                                                    <i className="fas fa-heart text-danger align-middle" />
+                                                </a>
+                                            </div>
+                                            <h4 className="mb-2 text-truncate-line-2 ">
+                                                <Link to={`/course/course-detail/${c.slug}`} className="text-inherit text-decoration-none text-dark fs-5">
+                                                    {c.description}
+                                                </Link>
+                                            </h4>
+                                            <small>By: {c.teacher.full_name}</small> <br />
+                                            <small>{c.students.length} {c.students.lenght > 1 ? "Students":"Student"}</small> <br />
+                                            <div className="lh-1 mt-3 d-flex">
+                                                <span className="align-text-top">
+                                                    <span className="fs-6">
+                                                        <Rater total={5} rating={c.average_rating || 4} />
+                                                    </span>
+                                                </span>
+                                                <span className="text-warning">4.5</span>
+                                                <span className="fs-6 ms-2">({c.reviews?.length} Reviews)</span>
+                                            </div>
+                                        </div>
+                                        {/* Card Footer */}
+                                        <div className="card-footer">
+                                            <div className="row align-items-center g-0">
+                                                <div className="col">
+                                                    <h5 className="mb-0">${c.price}</h5>
+                                                </div>
+                                                <div className="col-auto">
+                                                   <button 
+                                                    type='button' 
+                                                    onClick={()=>addToCart(c.id,userId,c.price,country,cartId)} className="text-inherit text-decoration-none btn btn-primary me-2">
+                                                        <i className="fas fa-shopping-cart text-primary text-white" />
+                                                    </button>
+                                                    <Link to={`/course/course-details/${c.slug}`} className="text-inherit text-decoration-none btn btn-primary">
+                                                        Enroll Now <i className="fas fa-arrow-right text-primary align-middle me-2 text-white" />
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>))} 
               </div>
 
               <nav className="d-flex mt-5">

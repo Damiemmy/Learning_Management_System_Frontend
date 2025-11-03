@@ -6,12 +6,22 @@ import Rater from 'react-rater'
 import "react-rater/lib/react-rater.css"
 import useAxios from '../../utils/useAxios'
 import apiInstance from '../../utils/axios'
-
+import { useContext } from 'react'
+import CartId from '../plugin/CartId'
+import { CartContext } from '../plugin/context'
+import GetCurrentAddress from '../plugin/UserCountry'
+import Toast from '../plugin/Toast'
+import UserData from '../plugin/UserData'
 
 
 function Index() {
     const[course,setCourse]=useState([])
     const[isLoading,setIsLoading]=useState(true)
+    const{cartCount,setCartCount}=useContext(CartContext)
+    const[addToCartBtn,setAddToCartBtn]=useState("Add To Cart")
+    const country=GetCurrentAddress().country
+    const cartId=CartId()
+    const userId=UserData()?.user_id
 
 
     const fetchCourse=async()=>{
@@ -34,6 +44,38 @@ function Index() {
         fetchCourse();
     },[])
     console.log(course)
+
+        const addToCart=async(courseId,userId,price,country,cartid)=>{
+        setAddToCartBtn("Adding To Cart")
+        const formData=new FormData()
+        formData.append("course_id",courseId)
+        formData.append("user_id",userId)
+        formData.append("price",price)
+        formData.append("country_name",country)
+        formData.append("cart_id",cartid)
+
+        try{
+            await useAxios()
+                .post("/course/cart/",formData).then((res)=>{
+                console.log(res.data)
+                setAddToCartBtn("Added To Cart")
+            
+                apiInstance.get(`course/cart-list/${CartId()}`)
+                .then((res)=>{
+                setCartCount(res.data?.length);
+                })
+            Toast().fire({
+                icon:"success",
+                title:"Added To Cart",
+            })
+            
+            })     
+        }catch(err){
+            console.log(err.message)
+        }
+        
+    }
+
 
     return (
         <>
@@ -215,7 +257,9 @@ function Index() {
                                                     <h5 className="mb-0">${c.price}</h5>
                                                 </div>
                                                 <div className="col-auto">
-                                                    <button type='button' className="text-inherit text-decoration-none btn btn-primary me-2">
+                                                   <button 
+                                                    type='button' 
+                                                    onClick={()=>addToCart(c.id,userId,c.price,country,cartId)} className="text-inherit text-decoration-none btn btn-primary me-2">
                                                         <i className="fas fa-shopping-cart text-primary text-white" />
                                                     </button>
                                                     <Link to={`/course/course-details/${c.slug}`} className="text-inherit text-decoration-none btn btn-primary">

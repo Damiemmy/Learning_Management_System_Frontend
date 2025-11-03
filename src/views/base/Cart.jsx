@@ -1,16 +1,29 @@
 import { useState,useEffect } from 'react'
 import { Link } from 'react-router-dom'
-
+import { CartContext } from '../plugin/context'
+import { useContext } from 'react'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import apiInstance from '../../utils/axios'
 import CartId from '../plugin/CartId'
 import Toast from '../plugin/Toast'
+import UserData from '../plugin/UserData'
+import { useNavigate } from 'react-router-dom'
+
 
 
 function Cart() {
-    const[cart,setCart]=useState([])
+    const[cart,setCart]=useState([]) 
     const[cartStats,setCartStats]=useState([])
+    const{setCartCount,cartCount}=useContext(CartContext)
+    const UserId=UserData()?.user_id
+    const[bioData,setBioData]=useState({
+        full_name:"",
+        email:"",
+        country:"",
+    })
+    const[orderid,setOrderId]=useState(null)
+    const navigate=useNavigate()
 
     const fetchCartItems=async()=>{
         await apiInstance.get(`course/cart-list/${CartId()}`)
@@ -24,13 +37,52 @@ function Cart() {
         setCartStats(res.data)
         });
     }
-useEffect(()=>{
-    fetchCartItems()
-},[])
-       
+    useEffect(()=>{
+        fetchCartItems()
+    },[])
+        
+    const CartItemDelete=async(itemId)=>{
+       await apiInstance.delete(`/course/cart-delete/${CartId()}/${itemId}`)
+        .then((res)=>{
+            console.log(res.data);
+            fetchCartItems()
+            apiInstance.get(`course/cart-list/${CartId()}`)
+            .then((res)=>{
+            setCartCount(res.data?.length);
+            })
+            Toast().fire({
+                icon:"success",
+                title:"CartItem Deleted"
+            })
+       })
+    }
+    
+    const handleBioDataChange=(event)=>{
+        setBioData({
+            ...bioData,
+            [event.target.name]: event.target.value,
+        })
+    }
+    console.log(bioData.full_name)
 
-    
-    
+    const createOrder=async(e)=>{
+        e.preventDefault()
+        const formData=new FormData()
+        formData.append("full_name",bioData.full_name)
+        formData.append("email",bioData.email)
+        formData.append("country",bioData.country)
+        formData.append("user_id",UserId)
+        formData.append("cart_id",CartId())
+        try{
+            const Response=await apiInstance.post('/order/create-order/',formData)
+            navigate(`/checkout/${Response.data.order_oid}`)
+        }catch(err){
+            console.log(err.message)
+
+        }
+        
+
+    }
 
     return (
         <>
@@ -66,7 +118,7 @@ useEffect(()=>{
 
             <section className="pt-5">
                 <div className="container">
-                    <form  >
+                    <form onSubmit={createOrder} >
                         <div className="row g-4 g-sm-5">
                             {/* Main content START */}
                             <div className="col-lg-8 mb-4 mb-sm-0">
@@ -92,12 +144,15 @@ useEffect(()=>{
                                                         <h5 className="text-success mb-0">{`$${c.course.price}`}</h5>
                                                     </td>
                                                     <td>
-                                                        <button className="btn btn-sm btn-danger px-2 mb-0">
+                                                        <button onClick={()=>CartItemDelete(c.id)} type="button" className="btn btn-sm btn-danger px-2 mb-0">
                                                             <i className="fas fa-fw fa-times" />
                                                         </button>
                                                     </td>
                                                     </tr> 
                                                 ))}
+
+                                                {cart?.length<1 && 
+                                                <p className='mt-1 p-1'>No Item in Cart</p>}
                                                
                                             </tbody>
                                         </table>
@@ -119,7 +174,10 @@ useEffect(()=>{
                                                 type="text"
                                                 className="form-control"
                                                 id="yourName"
+                                                name='full_name'
+                                                value={bioData.full_name}
                                                 placeholder="Name"
+                                                onChange={handleBioDataChange}
                                             />
                                         </div>
                                         {/* Email */}
@@ -131,7 +189,10 @@ useEffect(()=>{
                                                 type="email"
                                                 className="form-control"
                                                 id="emailInput"
+                                                name='email'
+                                                value={bioData.email}
                                                 placeholder="Email"
+                                                onChange={handleBioDataChange}
                                             />
                                         </div>
                                         
@@ -145,6 +206,9 @@ useEffect(()=>{
                                                 className="form-control"
                                                 id="mobileNumber"
                                                 placeholder="Country"
+                                                name='country'
+                                                value={bioData.value}
+                                                onChange={handleBioDataChange}
                                             />
                                         </div>
 
@@ -159,21 +223,21 @@ useEffect(()=>{
                                     <ul class="list-group mb-3">
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             Sub Total
-                                            <span>${cartStats.price}</span>
+                                            <span>${cartStats.price?.toFixed(2)}</span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             Tax
-                                            <span>${cartStats.tax}</span>
+                                            <span>${cartStats.tax?.toFixed(2)}</span>
                                         </li>
                                         <li class="list-group-item d-flex fw-bold justify-content-between align-items-center">
                                             Total
-                                            <span className='fw-bold'>${cartStats.total}</span>
+                                            <span className='fw-bold'>${cartStats.total?.toFixed(2)}</span>
                                         </li>
                                     </ul>
                                     <div className="d-grid">
-                                        <Link to={`/checkout/`} className="btn btn-lg btn-success">
+                                        <button type='submit' className="btn btn-lg btn-success">
                                             Proceed to Checkout
-                                        </Link>
+                                        </button>
                                     </div>
                                     <p className="small mb-0 mt-2 text-center">
                                         By proceeding to checkout, you agree to these{" "}<a href="#"> <strong>Terms of Service</strong></a>

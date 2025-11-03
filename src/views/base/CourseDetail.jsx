@@ -1,4 +1,4 @@
-import {useState,useEffect} from 'react'
+import {useState,useEffect, useContext} from 'react'
 import { Link } from 'react-router-dom'
 import moment from "moment"
 import CartId from '../plugin/CartId'
@@ -12,6 +12,7 @@ import useAxios from '../../utils/useAxios'
 import { useParams } from 'react-router-dom'
 import GetCurrentAddress from '../plugin/UserCountry'
 import UserData from '../plugin/UserData'
+import { CartContext } from '../plugin/context'
 
 function CourseDetail() {
     const[course,setCourse]=useState([])
@@ -21,8 +22,10 @@ function CourseDetail() {
     console.log(CartId())
     const country= (GetCurrentAddress().country);
     const userId= UserData().user_id
+    const {cartCount,setCartCount}=useContext(CartContext)
     console.log(userId)
     console.log(country)
+
 
     const getCourseDetails=async()=>{
         setIsLoading(true)
@@ -60,13 +63,20 @@ function CourseDetail() {
         formData.append("cart_id",cartid)
 
         try{
-            await useAxios().post("/course/cart/",formData).then((res)=>{
-            console.log(res.data)
-            setAddToCartBtn("Added To Cart")
+            await useAxios()
+                .post("/course/cart/",formData).then((res)=>{
+                console.log(res.data)
+                setAddToCartBtn("Added To Cart")
+            
+                apiInstance.get(`course/cart-list/${CartId()}`)
+                .then((res)=>{
+                setCartCount(res.data?.length);
+                })
             Toast().fire({
                 icon:"success",
                 title:"Added To Cart",
             })
+            
             })     
         }catch(err){
             console.log(err.message)
@@ -990,7 +1000,7 @@ function CourseDetail() {
                                                    {addToCartBtn==="Add To Cart" &&
                                                     <button 
                                                     type="button"
-                                                    onClick={()=>addToCart(course.id,userId,course.price,country,CartId)} 
+                                                    onClick={()=>addToCart(course.id,userId,course.price,country,CartId())} 
                                                     className="btn btn-primary mb-0 w-100 me-2">
 
                                                         <i className='fas fa-shopping-cart'></i> Add To Cart
@@ -1000,6 +1010,7 @@ function CourseDetail() {
                                                    {addToCartBtn==="Added To Cart" &&
                                                     <button 
                                                     type="button"
+                                                    disabled
                                                     onClick={()=>addToCart(1,1,course.price,country,CartId())} 
                                                     className="btn btn-primary mb-0 w-100 me-2">
 

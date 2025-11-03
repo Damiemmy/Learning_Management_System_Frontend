@@ -1,10 +1,39 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import {useState,useEffect} from 'react'
+import { Link, useParams } from 'react-router-dom'
+
 
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
+import apiInstance from '../../utils/axios'
 
 function Success() {
+    const [order,setOrder]=useState([])
+    const[orderMessage,setOrderMessage]=useState("");
+    const param= useParams()
+
+    const urlParam=new URLSearchParams(window.location.search);
+    const sessionId=urlParam.get("session_id");
+    const paypalOrderId=urlParam.get('paypal_order_id')
+
+    useEffect(()=>{
+        const formData=new FormData()
+        formData.append("order_oid",param.order_oid);
+        formData.append("session_id",sessionId)
+        formData.append('paypal_order_id',param.order_oid);
+
+        setOrderMessage("Processing Payment")
+        try{
+            apiInstance.post('payment/payment-success/',formData).then((res)=>{
+                console.log(res.data);
+                setOrderMessage(res.data.message)
+            })
+
+        }catch(err){
+            console.log(err.message)
+        }
+
+    })
+
     return (
         <>
             <BaseHeader />
