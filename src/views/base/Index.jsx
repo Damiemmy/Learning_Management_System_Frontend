@@ -14,6 +14,7 @@ import Toast from '../plugin/Toast'
 import UserData from '../plugin/UserData'
 
 
+
 function Index() {
     const[course,setCourse]=useState([])
     const[isLoading,setIsLoading]=useState(true)
@@ -75,6 +76,18 @@ function Index() {
         }
         
     }
+    //Pagination:
+    const itemsPerPage=2
+    const [currentPage,setCurrentPage]=useState(1)
+    const indexOfLastItem=currentPage*itemsPerPage
+    const indexOfFirstItem=indexOfLastItem-itemsPerPage
+    const currentItems=course.slice(indexOfFirstItem,indexOfLastItem)
+    const totalPages=Math.ceil(course.length/itemsPerPage)
+    const pageNumbers=Array.from(
+        {length:totalPages},
+        (_,index)=>index + 1
+
+    )
 
 
     return (
@@ -208,7 +221,7 @@ function Index() {
                     <div className="row">
                         <div className="col-md-12">
                             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                               {course?.map((c,index)=>(
+                               {currentItems?.map((c,index)=>(
                                 
                                <div className="col">
                                     {/* Card */}
@@ -272,13 +285,17 @@ function Index() {
                                 </div>))} 
 
 
-                                {/* <nav className="d-flex mt-5">
+                                
+
+                            </div>
+                            <nav className="d-flex mt-5">
                                   <ul className="pagination">
                                     <li
-                                      className=""
+                                      className={`page-item ${currentPage===1 ? "disabled":""}`}
                                     >
                                       <button
                                         className="page-link me-1"
+                                        onClick={()=>setCurrentPage(currentPage-1)}
                                       >
                                         <i className="ci-arrow-left me-2" />
                                         Previous
@@ -286,32 +303,31 @@ function Index() {
                                     </li>
                                   </ul>
                                   <ul className="pagination">
-                                    <li
-                                        key={1}
-                                        className="active"
+                                    {pageNumbers.map((number)=>(
+                                        <li
+                                        key={number}
+                                        className={`page-item ${currentPage===number ? "active":""}`}
                                       >
                                         <button
-                                          className="page-link"
-                                        >
-                                          1
+                                          className="page-link" onClick={()=>setCurrentPage(number)}
+                                         > {number}
                                         </button>
                                       </li>
+                                    ))}
                                   </ul>
                                   <ul className="pagination">
                                     <li
-                                      className={`totalPages`}
+                                      className={`page-item ${currentPage === totalPages ? "disabled":""} `}
                                     >
                                       <button
-                                        className="page-link ms-1"
+                                        className="page-link ms-1" onClick={()=>setCurrentPage(currentPage + 1)}
                                       >
                                         Next
                                         <i className="ci-arrow-right ms-3" />
                                       </button>
                                     </li>
                                   </ul>
-                                </nav> */}
-
-                            </div>
+                                </nav> 
 
                         </div>
                     </div>
