@@ -6,10 +6,11 @@ const useAuthStore=create((set,get)=>({
     loading:false,
     user:()=>({
         user_id:get().allUserData?.user_id || null,
-        username:get().allUserData?.username || null
+        username:get().allUserData?.username || null,
     }),
-    setUser:(user)=>set({
-        allUserData:user
+    setUser:(user)=>
+        set({
+        allUserData:user,
     }),
     setLoading:(loading)=>set({loading}),
 

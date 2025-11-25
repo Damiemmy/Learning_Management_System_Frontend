@@ -16,6 +16,10 @@ import CartId from "./views/plugin/CartId"
 import Checkout from "./views/base/Checkout"
 import Success from "./views/base/Success"
 import Search from "./views/base/Search"
+import Profile from "./views/student/Profile"
+import ChangePassword from "./views/student/ChangePassword"
+import Dashboard from "./views/student/Dashboard"
+
 
 function App() {
 const {cartCount,setCartCount}=useContext(CartContext)
@@ -51,6 +55,10 @@ const {cartCount,setCartCount}=useContext(CartContext)
         <Route path="/checkout/:oid/" element={<Checkout/>}/>
         <Route path="/payment-success/:order_oid" element={<Success/>}/>
         <Route path="/search/" element={<Search/>}/>
+        <Route path="/search/" element={<Search/>}/>
+        <Route path="/student/profile/" element={<Profile/>}/>
+        <Route path="/student/change-password/" element={<ChangePassword/>}/>
+        <Route path="/student/dashboard/" element={<Dashboard/>}/>
       </Routes>
     </MainWrapper>
     </BrowserRouter>

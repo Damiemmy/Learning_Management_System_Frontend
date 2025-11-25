@@ -1,9 +1,15 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../plugin/context";
-
+import { useAuthStore } from "../../store/auth";
 function BaseHeader() {
   const { cartCount } = useContext(CartContext);
+
+  const [isLoggedIn,user]=useAuthStore((state)=>[
+    state.isLoggedIn,
+    state.user
+  ])
+  console.log(isLoggedIn())
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -122,15 +128,26 @@ function BaseHeader() {
               <i className="fas fa-search"></i>
             </button>
           </form>
-
           {/* Auth + Cart Buttons */}
           <div className="d-flex flex-wrap mt-2 mt-lg-0 gap-2">
+          {isLoggedIn()===true?
+          (<>
+            {/*logout button */}
+            <Link to="/login/" className="btn btn-primary">
+              <i className="fas fa-sign-out-alt me-1"></i> Logout
+            </Link>
+             
+          </>):(
+            <>
+            {/*login and register button*/}
             <Link to="/login/" className="btn btn-primary">
               <i className="fas fa-sign-in-alt me-1"></i> Login
             </Link>
             <Link to="/register/" className="btn btn-outline-light">
               <i className="fas fa-user-plus me-1"></i> Register
             </Link>
+            </>)
+          }
             <Link className="btn btn-success" to="/cart/">
               <i className="fas fa-shopping-cart me-1"></i> Cart ({cartCount || 0})
             </Link>

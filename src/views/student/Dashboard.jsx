@@ -1,13 +1,36 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-
+import { useState,useEffect } from 'react'
+import useAxios from '../../utils/useAxios'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
+import UserData from '../plugin/UserData'
 
 
 function Dashboard() {
+    const[course,setCourses]=useState([])
+    const[stats,setStats]=useState([])
+    const[fetching,setFetching]=useState(true);
+
+    const fetchData=()=>{
+        useAxios().get(`student/summary/${UserData()?.user_id}/`)
+        .then((res)=>{
+            console.log(res.data)
+            setStats(res.data)
+        }
+        )
+        useAxios().get(`student/course-list/${UserData()?.user_id}/`)
+        .then((res)=>{
+            console.log(res.data)
+            setCourses(res.data)
+        }
+        )
+    }
+    useEffect(()=>{
+        fetchData();
+    },[])
     return (
         <>
             <BaseHeader />

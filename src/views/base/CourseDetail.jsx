@@ -21,7 +21,7 @@ function CourseDetail() {
     const[addToCartBtn,setAddToCartBtn]=useState('Add To Cart')
     console.log(CartId())
     const country= (GetCurrentAddress().country);
-    const userId= UserData().user_id
+    const userId= UserData()?.user_id
     const {cartCount,setCartCount}=useContext(CartContext)
     console.log(userId)
     console.log(country)

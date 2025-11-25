@@ -1,11 +1,53 @@
-import React from 'react'
+import React,{useContext,useState,useEffect} from 'react';
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
 
+import useAxios from "../../utils/useAxios";
+import UserData from '../plugin/UserData'
+import Toast from '../plugin/Toast'
+import apiInstance from '../../utils/axios';
+
 
 function ChangePassword() {
+    const[password,setPassword]=useState({
+        old_password:"",
+        new_password:"",
+        confirm_new_password:"",
+    });
+    
+    const handlePasswordChange=(event)=>{
+        setPassword({
+            ...password,
+            [event.target.name]:event.target.value,
+    })
+    }
+    console.log(password)
+    const changePasswordSubmit=async(e)=>{
+        e.preventDefault()
+
+        if(password.confirm_new_password !== password.new_password){
+            Toast().fire({
+                icon:'error',
+                title:'Password does not match',
+            })
+        }
+        if(password.old_password === password.new_password){
+            Toast().fire({
+                icon:'warning',
+                title:'Use a Different Password',
+            })
+        }
+        const formdata=new FormData()
+        formdata.append("user_id",UserData()?.user_id);
+        formdata.append("old_password",password.old_password);
+        formdata.append("new_password",password.new_password);
+        console.log(UserData()?.user_id)
+        await useAxios().post('user/change-password/',formdata).then((res)=>{
+            console.log(res.data)
+        })
+    }
     return (
         <>
             <BaseHeader />
@@ -27,7 +69,7 @@ function ChangePassword() {
                                 {/* Card body */}
                                 <div className="card-body">
                                     <div>
-                                        <form className="row gx-3 needs-validation" noValidate="">
+                                        <form onSubmit={changePasswordSubmit} className="row gx-3 needs-validation" noValidate="">
                                             {/* First name */}
                                             <div className="mb-3 col-12 col-md-12">
                                                 <label className="form-label" htmlFor="fname">
@@ -39,6 +81,9 @@ function ChangePassword() {
                                                     className="form-control"
                                                     placeholder="**************"
                                                     required=""
+                                                    name="old_password"
+                                                    value={password.old_password}
+                                                    onChange={handlePasswordChange}
                                                 />
                                             </div>
                                             {/* Last name */}
@@ -52,6 +97,10 @@ function ChangePassword() {
                                                     className="form-control"
                                                     placeholder="**************"
                                                     required=""
+                                                    value={password.new_password}
+                                                    name='new_password'
+                                                    onChange={handlePasswordChange}
+
                                                 />
                                             </div>
 
@@ -66,6 +115,9 @@ function ChangePassword() {
                                                     className="form-control"
                                                     placeholder="**************"
                                                     required=""
+                                                    value={password.confirm_new_password}
+                                                    name="confirm_new_password"
+                                                    onChange={handlePasswordChange}
                                                 />
                                                 <div className="invalid-feedback">Please choose country.</div>
                                             </div>
