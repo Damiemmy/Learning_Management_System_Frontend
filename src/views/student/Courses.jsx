@@ -1,12 +1,51 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-
+import { useState,useEffect } from 'react'
+import useAxios from '../../utils/useAxios'
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
+import UserData from '../plugin/UserData'
+import moment from 'moment'
+
+
 
 function Courses() {
+    const[course,setCourses]=useState([])
+    const[fetching,setFetching]=useState(true);
+    const[query,setSearchQuery]=useState('')
+
+    const fetchData=()=>{
+        setFetching(true)
+        
+        useAxios().get(`student/course-list/${UserData()?.user_id}/`)
+        .then((res)=>{
+            console.log(res.data)
+            setCourses(res.data)
+            setFetching(false)
+        }
+        )
+    }
+    useEffect(()=>{
+        fetchData();
+    },[])
+
+    const handleSearch=(e)=>{
+      const query=e.target.value.toLowerCase();
+      setSearchQuery(query)
+      console.log(query);
+
+      if (query===""){
+        fetchData()
+      }else{
+        const course_list=course.filter((courses)=>{
+          return courses.course.title.toLowerCase().includes(query)
+
+        })
+        setCourses(course_list)
+      }
+    }
     return (
         <>
             <BaseHeader />
@@ -20,9 +59,14 @@ function Courses() {
                         <Sidebar />
                         <div className="col-lg-9 col-md-8 col-12">
                             <h4 className="mb-0 mb-4"> <i className='fas fa-shopping-cart'></i> My Courses</h4>
-
+                          
+                          {fetching===true?
+                            <>
+                            <p className='mt-3 p-3'>Loading...</p>
+                            </>:<>
                             <div className="card mb-4">
                                 <div className="card-header">
+                                    <h3 className="mb-0">Courses</h3>
                                     <span>
                                         Start watching courses now from your dashboard page.
                                     </span>
@@ -34,6 +78,7 @@ function Courses() {
                                                 type="search"
                                                 className="form-control"
                                                 placeholder="Search Your Courses"
+                                                onChange={handleSearch}
                                             />
                                         </div>
                                     </form>
@@ -45,19 +90,20 @@ function Courses() {
                                                 <th>Courses</th>
                                                 <th>Date Enrolled</th>
                                                 <th>Lectures</th>
-                                                <th>Completed Lecture</th>
+                                                <th>Completed</th>
                                                 <th>Action</th>
                                                 <th />
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {course.map((c,index)=>(
                                             <tr>
                                                 <td>
                                                     <div className="d-flex align-items-center">
                                                         <div>
                                                             <a href="#">
                                                                 <img
-                                                                    src="https://geeksui.codescandy.com/geeks/assets/images/course/course-react.jpg"
+                                                                    src={c.course.image}
                                                                     alt="course"
                                                                     className="rounded img-4by3-lg"
                                                                     style={{ width: "100px", height: "70px", borderRadius: "50%", objectFit: "cover" }}
@@ -67,33 +113,43 @@ function Courses() {
                                                         <div className="ms-3">
                                                             <h4 className="mb-1 h5">
                                                                 <a href="#" className="text-inherit text-decoration-none text-dark">
-                                                                    Learn React
+                                                                    {c.course.title}
                                                                 </a>
                                                             </h4>
                                                             <ul className="list-inline fs-6 mb-0">
                                                                 <li className="list-inline-item">
-                                                                    <i className='bi bi-reception-4'></i>
-                                                                    <span className='ms-1'>Beginner</span>
+                                                                    <i className='fas fa-user'></i>
+                                                                    <span className='ms-1'>{c.course.language}</span>
                                                                 </li>
                                                                 <li className="list-inline-item">
-                                                                    <i className='bi bi-mic'></i>
-                                                                    <span className='ms-1'>English</span>
+                                                                    <i className='bi bi-reception-4'></i>
+                                                                    <span className='ms-1'>{c.course.level}</span>
                                                                 </li>
                                                             </ul>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td><p className='mt-3'>7/11/2025</p></td>
-                                                <td><p className='mt-3'>15</p></td>
-                                                <td><p className='mt-3'>7</p></td>
+                                                <td><p className='mt-3'>{moment(c.date).format('D MMM,YYYY')}</p></td>
+                                                <td><p className='mt-3'>{c.lectures?.length}</p></td>
+                                                <td><p className='mt-3'>{c.completed_lessons?.length}</p></td>
                                                 <td>
-                                                    <Link to={`/student/courses/course_id/`} className='btn btn-primary btn-sm mt-3'>Continue Course <i className='fas fa-arrow-right'></i></Link>
+                                                    {c.lectures?.length < 1?
+                                                    <>
+                                                    <button className='btn btn-success btn-sm mt-3'>Start Course <i className='fas fa-arrow-right ms-2'></i></button>
+                                                    </>:
+                                                    <>
+                                                     <button className='btn btn-primary btn-sm mt-3'>Continue Course <i className='fas fa-arrow-right ms-2cd'></i></button>
+                                                    </>}
+                                                    
                                                 </td>
                                             </tr>
+                                            ))}
+                                            {course?.length<1 && <p className='mt-4 p-4'>No courses found</p>}
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
+                            </div></>
+                            }
                         </div>
                     </div>
                 </div>

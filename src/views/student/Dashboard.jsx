@@ -8,30 +8,51 @@ import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
 import UserData from '../plugin/UserData'
 import moment from 'moment'
+import apiInstance from '../../utils/axios'
 
 
 function Dashboard() {
     const[course,setCourses]=useState([])
     const[stats,setStats]=useState([])
     const[fetching,setFetching]=useState(true);
+    const[query,setSearchQuery]=useState('')
 
     const fetchData=()=>{
-        useAxios().get(`student/summary/${UserData()?.user_id}/`)
+        setFetching(true)
+        apiInstance(`student/summary/${UserData()?.user_id}/`)
         .then((res)=>{
             console.log(res.data[0])
             setStats(res.data[0])
+            setFetching(false)
         }
         )
-        useAxios().get(`student/course-list/${UserData()?.user_id}/`)
+        apiInstance.get(`student/course-list/${UserData()?.user_id}/`)
         .then((res)=>{
             console.log(res.data)
             setCourses(res.data)
+            setFetching(false)
         }
         )
     }
     useEffect(()=>{
         fetchData();
     },[])
+
+    const handleSearch=(e)=>{
+      const query=e.target.value.toLowerCase();
+      setSearchQuery(query)
+      console.log(query);
+
+      if (query===""){
+        fetchData()
+      }else{
+        const course_list=course.filter((courses)=>{
+          return courses.course.title.toLowerCase().includes(query)
+
+        })
+        setCourses(course_list)
+      }
+    }
     return (
         <>
             <BaseHeader />
@@ -90,7 +111,10 @@ function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-
+                            {fetching===true?
+                            <>
+                            <p className='mt-3 p-3'>Loading...</p>
+                            </>:<>
                             <div className="card mb-4">
                                 <div className="card-header">
                                     <h3 className="mb-0">Courses</h3>
@@ -105,6 +129,7 @@ function Dashboard() {
                                                 type="search"
                                                 className="form-control"
                                                 placeholder="Search Your Courses"
+                                                onChange={handleSearch}
                                             />
                                         </div>
                                     </form>
@@ -161,19 +186,21 @@ function Dashboard() {
                                                 <td>
                                                     {c.lectures?.length < 1?
                                                     <>
-                                                    <button className='btn btn-success btn-sm mt-3'>Start Course <i className='fas fa-arrow-right ms-2'></i></button>
+                                                    <Link to={`/student/courses/${c.enrollment_id}/`} className='btn btn-success btn-sm mt-3'>Start Course <i className='fas fa-arrow-right ms-2'></i></Link>
                                                     </>:
                                                     <>
-                                                     <button className='btn btn-primary btn-sm mt-3'>Continue Course <i className='fas fa-arrow-right ms-2'></i></button>
+                                                     <Link to={`/student/courses/${c.enrollment_id}/`} className='btn btn-primary btn-sm mt-3'>Continue Course <i className='fas fa-arrow-right ms-2cd'></i></Link>
                                                     </>}
                                                     
                                                 </td>
                                             </tr>
                                             ))}
+                                            {course?.length<1 && <p className='mt-4 p-4'>No courses found</p>}
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
+                            </div></>
+                            }
                         </div>
                     </div>
                 </div>

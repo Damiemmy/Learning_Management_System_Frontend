@@ -19,6 +19,8 @@ import Search from "./views/base/Search"
 import Profile from "./views/student/Profile"
 import ChangePassword from "./views/student/ChangePassword"
 import Dashboard from "./views/student/Dashboard"
+import Courses from "./views/student/Courses"
+import StudentCourseDetail from "./views/student/CourseDetail"
 
 
 function App() {
@@ -59,6 +61,8 @@ const {cartCount,setCartCount}=useContext(CartContext)
         <Route path="/student/profile/" element={<Profile/>}/>
         <Route path="/student/change-password/" element={<ChangePassword/>}/>
         <Route path="/student/dashboard/" element={<Dashboard/>}/>
+        <Route path="/student/courses/" element={<Courses/>}/>
+        <Route path="/student/courses/:enrollment_id/" element={<StudentCourseDetail/>}/>
       </Routes>
     </MainWrapper>
     </BrowserRouter>

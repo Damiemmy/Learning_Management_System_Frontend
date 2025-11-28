@@ -4,6 +4,7 @@ import jwt_decode from "jwt-decode"
 import Cookie from "js-cookie"
 import Swal from "sweetalert2"
 import axios from "axios"
+import useAxios from "./useAxios"
 
 export const login = async(email,password) => {
     try{

@@ -1,28 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect} from 'react'
+import { useParams } from 'react-router-dom'
+import ReactPlayer from 'react-player'
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import UserData from '../plugin/UserData';
+
 import BaseHeader from '../partials/BaseHeader'
 import BaseFooter from '../partials/BaseFooter'
 import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
+import useAxios from '../../utils/useAxios';
 
-import ReactPlayer from 'react-player'
-
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
 function CourseDetail() {
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => { setShow(true); }
-
+  
   const [noteShow, setNoteShow] = useState(false);
   const handleNoteClose = () => setNoteShow(false);
   const handleNoteShow = () => { setNoteShow(true); }
 
   const [ConversationShow, setConversationShow] = useState(false);
   const handleConversationClose = () => setConversationShow(false);
-  const handleConversationShow = () => { setConversationShow(true); }
+  const handleConversationShow = () => { setConversationShow(true);}
+  const [course,setCourse]=useState([])
+  const param= useParams()
+  console.log(param.enrollment_id)
 
+  const fetchCourseDetails=()=>{
+    useAxios().get(`student/course.detail/$(UserData()?.user_id/${param.enrollment_id}`)
+    .then((res)=>{
+      setCourse(res.data);
+      console.log(res.data)
+    });
+  };
+
+  useEffect(()=>{
+    fetchCourseDetails()
+  },[])
   return (
     <>
       <BaseHeader />
