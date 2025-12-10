@@ -7,7 +7,7 @@ import Sidebar from './Partials/Sidebar'
 import Header from './Partials/Header'
 
 function Wishlist() {
-    const wishlish=""
+    const wishlish="ksdlksk"
     return (
         <>
             <BaseHeader />
