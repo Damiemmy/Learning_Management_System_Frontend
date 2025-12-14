@@ -53,6 +53,7 @@ function Dashboard() {
         setCourses(course_list)
       }
     }
+    const newForm=""
     return (
         <>
             <BaseHeader />
